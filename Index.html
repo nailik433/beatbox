@@ -3,258 +3,462 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>BEATBOX — Drum Computer</title>
+<title>BEATBOX</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Space+Mono:wght@400;700&display=swap');
-  :root{
-    --bg:#0d0e10; --panel:#16181c; --panel2:#1d2026; --edge:#2a2e36;
-    --txt:#e8e6df; --dim:#6c727d; --accent:#ff5c2b; --accent2:#ffb020;
-    --snare:#ffd23f; --hihat:#3ad6c4; --namew:96px;
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-  html,body{background:var(--bg);color:var(--txt);font-family:'Space Mono',monospace;overscroll-behavior:none;}
-  body{
-    background:
-      radial-gradient(circle at 50% -10%, #1a1d22 0%, var(--bg) 60%),
-      repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,.012) 3px, rgba(255,255,255,.012) 4px);
-    min-height:100vh; padding:10px 10px 86px; max-width:860px; margin:0 auto;
-  }
-  h1{font-family:'Major Mono Display',monospace;font-size:1.5rem;letter-spacing:2px;color:var(--accent);text-shadow:0 0 18px rgba(255,92,43,.4);}
-  .hdr{display:flex;align-items:baseline;justify-content:space-between;padding:4px 4px 12px;}
-  .hdr small{color:var(--dim);font-size:.62rem;letter-spacing:3px;}
-  .panel{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--edge);border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 6px 16px rgba(0,0,0,.4);}
-  .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-  .lbl{font-size:.6rem;letter-spacing:2px;color:var(--dim);text-transform:uppercase;}
+@import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Space+Mono:wght@400;700&display=swap');
+:root{
+  --bg:#0d0f12; --s1:#131619; --s2:#181c21; --e1:#1f2329; --e2:#191d22;
+  --txt:#d8dae0; --dim:#52596a; --dim2:#313740;
+  --accent:#ff5c2b; --a2:#ffb020; --teal:#3ad6c4; --green:#2dba6e;
+  --namew:88px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html,body{background:var(--bg);color:var(--txt);font-family:'Space Mono',monospace;overscroll-behavior:none;}
+body{max-width:900px;margin:0 auto;padding:0 0 72px;}
 
-  .transport{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-  .btn{background:var(--panel2);border:1px solid var(--edge);color:var(--txt);font-family:'Space Mono';font-weight:700;font-size:.72rem;padding:11px 12px;border-radius:9px;cursor:pointer;letter-spacing:1px;transition:.12s;user-select:none;flex:1;text-align:center;}
-  .btn:active{transform:scale(.95);}
-  .btn.play{background:linear-gradient(180deg,#2a8f5e,#1c6e47);border-color:#34b073;color:#eafff3;flex:1.4;}
-  .btn.play.playing{background:linear-gradient(180deg,var(--accent),#c4380f);border-color:#ff7a52;}
-  .btn.icon{flex:0 0 auto;min-width:46px;}
-  .btn.on{background:linear-gradient(180deg,var(--accent2),#c98a00);border-color:var(--accent2);color:#1a1206;}
-  .btn.loopon{background:linear-gradient(180deg,var(--hihat),#1f9486);border-color:var(--hihat);color:#04211d;}
-  select.btn{appearance:none;-webkit-appearance:none;}
+/* ── HEADER ── */
+.hdr{
+  display:flex;align-items:center;gap:0;
+  padding:13px 16px 11px;border-bottom:1px solid var(--e2);
+}
+h1{
+  font-family:'Major Mono Display',monospace;font-size:1.1rem;
+  letter-spacing:2px;color:var(--accent);
+  text-shadow:0 0 18px rgba(255,92,43,.22);flex:0 0 auto;
+}
+.vsep{width:1px;height:20px;background:var(--e1);flex:0 0 auto;}
+.hdr .vsep{margin:0 12px;}
 
-  .tempo-wrap{display:flex;align-items:center;gap:12px;}
-  .bpm-num{font-family:'Major Mono Display';font-size:2.2rem;color:var(--accent2);min-width:100px;text-align:center;text-shadow:0 0 14px rgba(255,176,32,.35);}
-  .bpm-num span{font-size:.66rem;color:var(--dim);letter-spacing:2px;display:block;margin-top:-4px;}
-  input[type=range]{-webkit-appearance:none;flex:1;height:6px;background:linear-gradient(90deg,var(--accent) 0%,var(--accent2) 100%);border-radius:6px;outline:none;}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#bbb 60%,#777);border:2px solid #222;box-shadow:0 2px 6px rgba(0,0,0,.6);cursor:pointer;}
-  input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#ccc;border:2px solid #222;cursor:pointer;}
-  .tempo-btns{display:flex;flex-direction:column;gap:4px;}
-  .tempo-btns .btn{padding:6px 10px;flex:none;font-size:.9rem;line-height:1;}
+/* BPM block */
+.bpm-block{display:flex;align-items:center;gap:5px;flex:0 0 auto;}
+.bpm-wrap{display:flex;flex-direction:column;align-items:center;min-width:50px;}
+#bpmVal{font-family:'Major Mono Display',monospace;font-size:1.55rem;color:var(--a2);line-height:1;text-shadow:0 0 10px rgba(255,176,32,.2);}
+.bpm-unit{font-size:.44rem;color:var(--dim);letter-spacing:2px;margin-top:1px;}
+.bpm-slider{flex:1;min-width:60px;max-width:150px;margin-left:6px;}
 
-  .minictrl{display:flex;align-items:center;gap:10px;margin-top:10px;}
-  .minictrl .lbl{flex:0 0 auto;min-width:54px;}
-  .minictrl .val{font-size:.66rem;color:var(--accent2);min-width:42px;text-align:right;font-weight:700;}
+/* icon-style buttons */
+.ibtn{
+  font-family:'Space Mono',monospace;font-weight:700;font-size:.72rem;
+  background:transparent;border:1px solid var(--e1);color:var(--dim);
+  padding:7px 11px;border-radius:7px;cursor:pointer;
+  transition:.1s;user-select:none;line-height:1;
+}
+.ibtn:active{transform:scale(.95);}
+.ibtn:hover{color:var(--txt);}
+.ibtn.on{background:rgba(255,176,32,.1);border-color:var(--a2);color:var(--a2);}
+.ibtn.loopon{background:rgba(58,214,196,.08);border-color:var(--teal);color:var(--teal);}
+.hdr-tools{margin-left:auto;display:flex;gap:5px;align-items:center;}
 
-  .chips{display:flex;gap:5px;flex-wrap:wrap;}
-  .chip{flex:1;min-width:52px;padding:9px 4px;border-radius:8px;background:var(--panel2);border:1px solid var(--edge);font-size:.64rem;font-weight:700;cursor:pointer;text-align:center;letter-spacing:.5px;}
-  .chip.active{background:linear-gradient(180deg,var(--hihat),#1f9486);border-color:var(--hihat);color:#04211d;}
-  .chip.warm.active{background:linear-gradient(180deg,var(--accent2),#c98a00);border-color:var(--accent2);color:#1a1206;}
-  .activebar-info{font-size:.6rem;color:var(--dim);margin-bottom:8px;letter-spacing:1px;}
-  .activebar-info b{color:var(--accent2);}
+/* ── TOOLBAR: play + kits ── */
+.toolbar{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 16px;border-bottom:1px solid var(--e2);flex-wrap:wrap;
+}
+.play-btn{
+  font-family:'Space Mono',monospace;font-weight:700;font-size:.75rem;
+  letter-spacing:.5px;padding:10px 20px;border-radius:8px;cursor:pointer;
+  background:linear-gradient(170deg,#2dba6e,#1c8f52);
+  border:1px solid #38d47e;color:#e8fff4;
+  transition:.1s;user-select:none;flex:0 0 auto;white-space:nowrap;
+}
+.play-btn.playing{background:linear-gradient(170deg,var(--accent),#c4380f);border-color:#ff7a52;color:#fff;}
+.play-btn:active{transform:scale(.95);}
+.t-sep{width:1px;height:20px;background:var(--e1);flex:0 0 auto;}
 
-  .stepper{display:flex;align-items:center;gap:6px;}
-  .stepper .btn{flex:0 0 auto;padding:7px 12px;font-size:.85rem;line-height:1;}
-  .stepper .num{min-width:36px;text-align:center;font-weight:700;color:var(--accent2);font-size:.95rem;}
+/* Kit chips — rendered by JS with class "chip warm [active]" */
+#kitChips{display:flex;gap:4px;flex:1;overflow-x:auto;flex-wrap:nowrap;}
+#kitChips .chip{
+  flex:0 0 auto;padding:6px 11px;border-radius:6px;
+  background:transparent;border:1px solid var(--e1);
+  font-size:.58rem;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;color:var(--dim);font-family:'Space Mono',monospace;
+  transition:.1s;white-space:nowrap;min-width:0;
+}
+#kitChips .chip.warm.active{background:rgba(255,176,32,.1);border-color:var(--a2);color:var(--a2);}
+#kitChips .chip:active{transform:scale(.95);}
 
-  /* Beat-Gruppen Editor */
-  .grpchips{display:flex;gap:4px;margin-top:6px;}
-  .gchip{padding:8px 2px;border-radius:7px;background:var(--panel2);border:1px solid var(--edge);font-size:.58rem;font-weight:700;cursor:pointer;text-align:center;letter-spacing:.3px;overflow:hidden;white-space:nowrap;}
-  .gchip.sel{border-color:var(--accent);background:linear-gradient(180deg,rgba(255,92,43,.35),rgba(255,92,43,.12));color:#fff;}
-  .gchip small{display:block;font-size:.46rem;color:var(--dim);font-weight:400;}
-  .gchip.sel small{color:#ffc9b5;}
+/* ── SEQUENCER ── */
+.seq-wrap{
+  margin:12px 16px 0;
+  background:var(--s1);border:1px solid var(--e2);border-radius:12px;overflow:hidden;
+}
+.timeline{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;}
+.timeline.editmode{touch-action:pan-y;}
+.tl-inner{display:inline-block;min-width:100%;}
 
-  .daw{padding:0;overflow:hidden;}
-  .timeline{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;}
-  .timeline.editmode{touch-action:pan-y;}
-  .tl-inner{display:inline-block;min-width:100%;}
-  .ruler{display:flex;height:26px;position:sticky;top:0;z-index:6;}
-  .ruler .corner{flex:0 0 var(--namew);position:sticky;left:0;z-index:7;background:var(--panel);border-right:1px solid var(--edge);border-bottom:1px solid var(--edge);display:flex;align-items:center;justify-content:center;font-size:.5rem;color:var(--dim);letter-spacing:1px;}
-  .ruler .barnum{border-bottom:1px solid var(--edge);border-right:1px solid #363b45;display:flex;align-items:center;justify-content:center;gap:5px;font-size:.6rem;font-weight:700;letter-spacing:1px;color:var(--dim);cursor:pointer;background:var(--panel2);position:relative;flex:0 0 auto;}
-  .ruler .barnum.active{color:#fff;background:linear-gradient(180deg,rgba(255,92,43,.35),rgba(255,92,43,.12));}
-  .ruler .barnum.looped{box-shadow:inset 0 3px 0 var(--hihat);}
-  .ruler .barnum .subtag{font-size:.48rem;color:var(--hihat);font-weight:400;}
+.ruler{display:flex;height:26px;position:sticky;top:0;z-index:6;}
+.ruler .corner{
+  flex:0 0 var(--namew);position:sticky;left:0;z-index:7;
+  background:var(--s1);border-right:1px solid var(--e2);border-bottom:1px solid var(--e2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.44rem;color:var(--dim);letter-spacing:1px;
+}
+.ruler .barnum{
+  border-bottom:1px solid var(--e2);border-right:1px solid var(--e2);
+  display:flex;align-items:center;justify-content:center;gap:4px;
+  font-size:.55rem;font-weight:700;letter-spacing:.5px;color:var(--dim);
+  cursor:pointer;background:var(--s1);position:relative;flex:0 0 auto;transition:.1s;
+}
+.ruler .barnum:hover{background:var(--s2);}
+.ruler .barnum.active{color:var(--txt);background:rgba(255,92,43,.08);}
+.ruler .barnum.looped{box-shadow:inset 0 3px 0 var(--teal);}
+.ruler .barnum .subtag{font-size:.43rem;color:var(--teal);font-weight:400;}
 
-  .track{display:flex;height:34px;}
-  .tname{flex:0 0 var(--namew);position:sticky;left:0;z-index:5;background:linear-gradient(90deg,var(--panel) 85%,rgba(22,24,28,.4));border-right:1px solid var(--edge);display:flex;align-items:center;gap:3px;padding:0 4px;font-size:.52rem;font-weight:700;letter-spacing:.2px;text-transform:uppercase;}
-  .tname .dot{width:6px;height:6px;border-radius:2px;flex:0 0 auto;}
-  .tname .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;cursor:pointer;}
-  .tname .ms{font-size:.5rem;padding:2px 3px;border-radius:3px;border:1px solid var(--edge);cursor:pointer;line-height:1;color:var(--dim);}
-  .tname .ms.muted{background:#c4380f;color:#fff;border-color:#ff7a52;}
-  .tname .ms.soloed{background:var(--accent2);color:#1a1206;border-color:var(--accent2);}
-  .tname .rm{color:var(--dim);font-size:.62rem;cursor:pointer;}
-  .lane{display:flex;border-right:1px solid #363b45;border-bottom:1px solid #1c1f25;flex:0 0 auto;}
-  .grp{display:flex;border-left:1px solid #3a404b;}
-  .grp:first-child{border-left:none;}
-  .grp.trio{background:rgba(58,214,196,.04);}
-  .cell{flex:1;margin:2px 1px;border-radius:4px;background:#101216;border:1px solid #25282f;cursor:pointer;transition:.06s;min-width:0;}
-  .cell.playhead{outline:2px solid #fff;outline-offset:-1px;}
-  .lane.activebar{background:rgba(255,92,43,.05);}
-  .track.dimmed .lane{opacity:.32;}
+.track{display:flex;height:35px;}
+.tname{
+  flex:0 0 var(--namew);position:sticky;left:0;z-index:5;
+  background:linear-gradient(90deg,var(--s1) 80%,rgba(19,22,25,0));
+  border-right:1px solid var(--e2);
+  display:flex;align-items:center;gap:3px;padding:0 5px;
+  font-size:.48rem;font-weight:700;letter-spacing:.2px;text-transform:uppercase;
+}
+.tname .dot{width:5px;height:5px;border-radius:2px;flex:0 0 auto;}
+.tname .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;cursor:pointer;}
+.tname .ms{
+  font-size:.43rem;padding:2px 3px;border-radius:3px;
+  border:1px solid transparent;cursor:pointer;line-height:1;color:var(--dim2);transition:.1s;
+}
+.tname .ms:hover{color:var(--dim);border-color:var(--e1);}
+.tname .ms.muted{background:#c4380f;color:#fff;border-color:#ff7a52;}
+.tname .ms.soloed{background:var(--a2);color:#1a1206;border-color:var(--a2);}
+.tname .rm{color:var(--dim2);font-size:.58rem;cursor:pointer;transition:.1s;}
+.tname .rm:hover{color:#ff5c5c;}
+.lane{display:flex;border-right:1px solid var(--e2);border-bottom:1px solid #111316;flex:0 0 auto;}
+.grp{display:flex;border-left:1px solid var(--e1);}
+.grp:first-child{border-left:none;}
+.grp.trio{background:rgba(58,214,196,.03);}
+.cell{
+  flex:1;margin:3px 1px;border-radius:4px;
+  background:#0c0f12;border:1px solid #1c2025;
+  cursor:pointer;transition:.06s;min-width:0;
+}
+.cell.playhead{outline:2px solid rgba(255,255,255,.6);outline-offset:-1px;}
+.lane.activebar{background:rgba(255,92,43,.04);}
+.track.dimmed .lane{opacity:.2;}
 
-  .addtrack select{width:100%;background:var(--panel2);color:var(--txt);border:1px dashed var(--edge);border-radius:8px;padding:9px;font-family:'Space Mono';font-size:.7rem;}
-  .mini{font-size:.56rem;color:var(--dim);letter-spacing:1px;margin-top:6px;padding:0 2px;}
+/* ── BOTTOM BAR ── */
+.bot-bar{
+  margin:8px 16px 0;
+  background:var(--s1);border:1px solid var(--e2);border-radius:10px;
+  padding:8px 12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+}
+.bot-bar select{
+  background:transparent;color:var(--dim);border:1px solid var(--e1);
+  border-radius:6px;padding:6px 8px;font-family:'Space Mono';font-size:.58rem;
+  cursor:pointer;appearance:none;-webkit-appearance:none;flex:1;min-width:120px;
+}
+.b-sep{width:1px;height:18px;background:var(--e1);flex:0 0 auto;}
+.bar-btns{display:flex;gap:4px;flex-wrap:wrap;}
+.bbtn{
+  font-family:'Space Mono',monospace;font-weight:700;font-size:.56rem;
+  letter-spacing:.3px;padding:6px 9px;border-radius:6px;cursor:pointer;
+  border:1px solid var(--e1);background:transparent;color:var(--dim);
+  transition:.1s;user-select:none;white-space:nowrap;
+}
+.bbtn:hover{color:var(--txt);}
+.bbtn:active{transform:scale(.95);}
+.bbtn.on{background:rgba(58,214,196,.08);border-color:var(--teal);color:var(--teal);}
+.mini{font-size:.5rem;color:var(--dim);letter-spacing:1px;padding:4px 18px 0;}
 
-  .savelist{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
-  .saverow{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--edge);border-radius:8px;padding:8px 10px;}
-  .saverow .nm{flex:1;font-size:.66rem;font-weight:700;cursor:pointer;color:var(--hihat);}
-  .saverow .meta{font-size:.52rem;color:var(--dim);}
-  .saverow .del{color:var(--dim);cursor:pointer;font-size:.7rem;padding:2px 6px;}
-  input[type=text]{background:var(--panel2);border:1px solid var(--edge);color:var(--txt);font-family:'Space Mono';font-size:.7rem;padding:10px;border-radius:8px;flex:1;min-width:0;}
+/* ── COLLAPSIBLE PANELS ── */
+.panels{margin:10px 16px 0;display:flex;flex-direction:column;gap:6px;}
+details.cpanel{background:var(--s1);border:1px solid var(--e2);border-radius:10px;overflow:hidden;}
+details.cpanel summary{
+  cursor:pointer;font-size:.54rem;letter-spacing:1.5px;color:var(--dim);
+  text-transform:uppercase;padding:11px 14px;list-style:none;
+  display:flex;align-items:center;gap:6px;user-select:none;
+}
+details.cpanel summary::-webkit-details-marker{display:none;}
+details.cpanel summary .arr{color:var(--dim2);font-size:.5rem;flex:0 0 auto;width:8px;}
+details.cpanel[open] summary .arr::after{content:'▾';}
+details.cpanel:not([open]) summary .arr::after{content:'▸';}
+details.cpanel summary .sum-line{flex:1;height:1px;background:var(--e2);margin-left:4px;}
+.pbody{padding:0 14px 14px;}
 
-  .footer{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(180deg,rgba(13,14,16,.4),var(--bg) 60%);padding:10px;display:flex;gap:8px;max-width:860px;margin:0 auto;backdrop-filter:blur(6px);z-index:20;}
-  .footer .btn{padding:14px;font-size:.78rem;}
-  .btn.export{background:linear-gradient(180deg,var(--accent),#c4380f);border-color:#ff7a52;color:#fff;}
-  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--accent);color:var(--txt);padding:10px 18px;border-radius:30px;font-size:.7rem;opacity:0;transition:.3s;pointer-events:none;z-index:50;white-space:nowrap;}
-  .toast.show{opacity:1;}
-  details{margin-bottom:10px;}
-  summary{cursor:pointer;font-size:.62rem;letter-spacing:2px;color:var(--dim);text-transform:uppercase;padding:4px 0;list-style:none;}
-  summary::-webkit-details-marker{display:none;}
-  summary::before{content:'▸ ';color:var(--accent);}
-  details[open] summary::before{content:'▾ ';}
+/* Sliders + rows inside panels */
+.crow{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.clbl{font-size:.5rem;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;flex:0 0 52px;}
+.cval{font-size:.58rem;color:var(--a2);min-width:36px;text-align:right;font-weight:700;}
+input[type=range]{
+  -webkit-appearance:none;flex:1;height:4px;
+  background:linear-gradient(90deg,var(--accent),var(--a2));
+  border-radius:4px;outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fff,#bbb 60%,#777);
+  border:2px solid #1a1a1a;box-shadow:0 2px 6px rgba(0,0,0,.5);cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:18px;height:18px;border-radius:50%;background:#ccc;border:2px solid #1a1a1a;cursor:pointer;
+}
+select.csel{
+  background:transparent;color:var(--dim);border:1px solid var(--e1);
+  border-radius:6px;padding:5px 8px;font-family:'Space Mono';font-size:.56rem;
+  cursor:pointer;appearance:none;-webkit-appearance:none;
+}
+
+/* Chips used in panels (sig presets, div options, export) */
+.chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+.chip{
+  flex:1;min-width:44px;padding:7px 4px;border-radius:7px;
+  background:transparent;border:1px solid var(--e1);
+  font-size:.56rem;font-weight:700;cursor:pointer;text-align:center;
+  letter-spacing:.5px;color:var(--dim);font-family:'Space Mono';transition:.1s;
+}
+.chip.active{background:rgba(58,214,196,.08);border-color:var(--teal);color:var(--teal);}
+.chip.warm.active{background:rgba(255,176,32,.08);border-color:var(--a2);color:var(--a2);}
+
+/* Group chips */
+.grpchips{display:flex;gap:4px;margin-top:4px;}
+.gchip{
+  padding:7px 3px;border-radius:6px;background:transparent;border:1px solid var(--e1);
+  font-size:.52rem;font-weight:700;cursor:pointer;text-align:center;
+  letter-spacing:.2px;overflow:hidden;white-space:nowrap;color:var(--dim);
+  font-family:'Space Mono';transition:.1s;
+}
+.gchip.sel{border-color:var(--accent);background:rgba(255,92,43,.08);color:#fff;}
+.gchip small{display:block;font-size:.42rem;color:var(--dim);font-weight:400;}
+.gchip.sel small{color:#ffc9b5;}
+
+/* Steppers (time sig num/den) */
+.stepper{display:flex;align-items:center;gap:5px;}
+.stepper .btn{
+  font-family:'Space Mono';font-weight:700;background:transparent;
+  border:1px solid var(--e1);color:var(--dim);padding:5px 10px;border-radius:6px;
+  cursor:pointer;font-size:.85rem;line-height:1;transition:.1s;
+}
+.stepper .btn:hover{color:var(--txt);}
+.stepper .num{min-width:28px;text-align:center;font-weight:700;color:var(--a2);font-size:.9rem;}
+
+/* Merge / apply-all buttons */
+.txbtn{
+  font-family:'Space Mono';font-weight:700;font-size:.56rem;padding:7px 10px;
+  border-radius:6px;cursor:pointer;border:1px solid var(--e1);background:transparent;
+  color:var(--dim);transition:.1s;user-select:none;flex:1;
+}
+.txbtn:hover{color:var(--txt);}
+.txbtn.on{background:rgba(255,176,32,.08);border-color:var(--a2);color:var(--a2);}
+
+/* Mixer rows — generated by JS with class "minictrl" */
+.minictrl{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.lbl{font-size:.5rem;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;flex:0 0 66px;}
+.val{font-size:.58rem;color:var(--a2);min-width:36px;text-align:right;font-weight:700;}
+
+/* Save / Load */
+input[type=text]{
+  background:transparent;border:1px solid var(--e1);color:var(--txt);
+  font-family:'Space Mono';font-size:.63rem;padding:8px 10px;
+  border-radius:7px;flex:1;min-width:0;outline:none;
+}
+input[type=text]:focus{border-color:var(--a2);}
+.savelist{display:flex;flex-direction:column;gap:5px;margin-top:8px;}
+.saverow{
+  display:flex;align-items:center;gap:8px;
+  background:var(--s2);border:1px solid var(--e2);border-radius:8px;padding:7px 10px;
+}
+.saverow .nm{flex:1;font-size:.6rem;font-weight:700;cursor:pointer;color:var(--teal);}
+.saverow .meta{font-size:.48rem;color:var(--dim);}
+.saverow .del{color:var(--dim2);cursor:pointer;font-size:.62rem;padding:2px 5px;transition:.1s;}
+.saverow .del:hover{color:#ff5c5c;}
+
+/* Footer */
+.footer{
+  position:fixed;bottom:0;left:0;right:0;
+  background:linear-gradient(180deg,rgba(13,15,18,0),var(--bg) 52%);
+  padding:8px 16px 10px;display:flex;gap:8px;
+  max-width:900px;margin:0 auto;backdrop-filter:blur(8px);z-index:20;
+}
+.footer .play-btn{flex:1;}
+.exp-btn{
+  font-family:'Space Mono';font-weight:700;font-size:.68rem;
+  padding:10px 18px;border-radius:8px;cursor:pointer;
+  border:1px solid #ff7a52;background:linear-gradient(170deg,var(--accent),#c4380f);
+  color:#fff;letter-spacing:.5px;transition:.1s;user-select:none;flex:0 0 auto;
+}
+.exp-btn:active{transform:scale(.95);}
+
+.toast{
+  position:fixed;bottom:68px;left:50%;transform:translateX(-50%);
+  background:var(--s2);border:1px solid var(--e1);color:var(--txt);
+  padding:8px 16px;border-radius:20px;font-size:.6rem;
+  opacity:0;transition:.25s;pointer-events:none;z-index:50;white-space:nowrap;
+}
+.toast.show{opacity:1;}
 </style>
 </head>
 <body>
-  <div class="hdr"><h1>beatbox</h1><small>DRUM COMPUTER</small></div>
 
-  <div class="panel">
-    <div class="transport">
-      <div class="btn play" id="playBtn">▶ PLAY</div>
-      <div class="btn icon" id="loopBtn" title="Loop aktiven Takt">↻</div>
-      <div class="btn icon" id="undoBtn" title="Rückgängig">↶</div>
+<!-- HEADER: title · BPM · icon buttons -->
+<div class="hdr">
+  <h1>beatbox</h1>
+  <div class="vsep"></div>
+  <div class="bpm-block">
+    <div class="ibtn" id="bpmDown">−</div>
+    <div class="bpm-wrap">
+      <div id="bpmVal">120</div>
+      <span class="bpm-unit">BPM</span>
     </div>
-    <div class="transport" style="margin-top:8px;">
-      <div class="btn icon" id="metroBtn" title="Metronom">◉</div>
-      <select class="btn" id="metroRate" title="Metronom-Raster">
-        <option value="4">Viertel</option><option value="8">Achtel</option><option value="16">Sechzehntel</option>
-      </select>
-      <select class="btn" id="metroSound" title="Metronom-Sound">
-        <option value="click">Click</option><option value="beep">Beep</option>
-        <option value="woodblock">Wood</option><option value="cowbell">Cow</option>
-        <option value="rim">Rim</option>
-      </select>
+    <div class="ibtn" id="bpmUp">+</div>
+  </div>
+  <input type="range" class="bpm-slider" id="bpm" min="30" max="280" value="120">
+  <div class="hdr-tools">
+    <div class="ibtn" id="loopBtn" title="Loop aktiven Takt">↻</div>
+    <div class="ibtn" id="metroBtn" title="Metronom">◉</div>
+    <div class="ibtn" id="undoBtn" title="Rückgängig">↶</div>
+  </div>
+</div>
+
+<!-- TOOLBAR: Play + Kit -->
+<div class="toolbar">
+  <div class="play-btn" id="playBtn">▶ PLAY</div>
+  <div class="t-sep"></div>
+  <div id="kitChips"></div>
+</div>
+
+<!-- SEQUENCER -->
+<div class="seq-wrap">
+  <div class="timeline editmode" id="timeline">
+    <div class="tl-inner" id="tlInner">
+      <div class="ruler" id="ruler"></div>
+      <div id="lanes"></div>
     </div>
   </div>
+</div>
 
-  <div class="panel">
-    <div class="lbl" style="margin-bottom:8px;">Tempo</div>
-    <div class="tempo-wrap">
-      <div class="bpm-num"><span>BPM</span><div id="bpmVal">120</div></div>
-      <input type="range" id="bpm" min="30" max="280" value="120">
-      <div class="tempo-btns"><div class="btn" id="bpmUp">+</div><div class="btn" id="bpmDown">−</div></div>
-    </div>
-    <div class="minictrl">
-      <div class="lbl">Swing</div>
-      <input type="range" id="swing" min="0" max="65" value="0">
-      <div class="val" id="swingVal">0%</div>
-    </div>
-    <div class="minictrl">
-      <div class="lbl">Zoom</div>
-      <input type="range" id="zoom" min="28" max="110" value="47">
-      <div class="val" id="zoomVal">1.0×</div>
-    </div>
+<!-- BOTTOM BAR: add track · bar actions · mode -->
+<div class="bot-bar">
+  <select id="addTrack"><option value="">+ Instrument hinzufügen…</option></select>
+  <div class="b-sep"></div>
+  <div class="bar-btns">
+    <div class="bbtn" id="addBar">+ Takt</div>
+    <div class="bbtn" id="copyBar">⧉ Kopie</div>
+    <div class="bbtn" id="clearBar">⌫ Leeren</div>
+    <div class="bbtn" id="delBar">🗑</div>
   </div>
+  <div class="b-sep"></div>
+  <div class="bbtn" id="modeBtn">✎ EDIT</div>
+</div>
+<div class="mini" id="modeHint">EDIT: Zellen tippen zum Setzen. Für Seitwärts-Scroll → SCROLL umschalten.</div>
 
-  <div class="panel">
-    <div class="lbl" style="margin-bottom:8px;">Drumkit</div>
-    <div class="chips" id="kitChips"></div>
-  </div>
+<!-- COLLAPSIBLE PANELS -->
+<div class="panels">
 
-  <div class="panel">
-    <div class="activebar-info">Aktiver Takt: <b id="activeBarLabel">1</b> · Taktart: <b id="sigLabel">4/4</b> · Modus: <b id="modeLabel">EDIT</b></div>
-
-    <div class="lbl" style="margin-bottom:6px;">Taktart (aktiver Takt)</div>
-    <div class="chips" id="sigChips"></div>
-    <div class="row" style="margin-top:8px;">
-      <div class="stepper"><div class="btn" id="numDown">−</div><div class="num" id="numVal">4</div><div class="btn" id="numUp">+</div></div>
-      <div class="lbl">/</div>
-      <div class="stepper"><div class="btn" id="denDown">−</div><div class="num" id="denVal">4</div><div class="btn" id="denUp">+</div></div>
-      <div class="lbl" style="flex:1;">custom</div>
-    </div>
-
-    <div class="lbl" style="margin:12px 0 0;">Gruppierung pro Zählzeit — Beat antippen, dann Unterteilung wählen</div>
-    <div class="grpchips" id="grpChips"></div>
-    <div class="chips" id="divChips" style="margin-top:6px;"></div>
-    <div class="row" style="margin-top:6px;">
-      <div class="btn" id="mergeBtn">⏛ Vierteltriole (2 Beats)</div>
-      <div class="btn" id="applyAllBtn">⇶ Auf alle Beats</div>
-    </div>
-
-    <div class="row" style="margin-top:12px;">
-      <div class="btn" id="modeBtn">✎ EDIT</div>
-      <div class="btn" id="addBar">＋ TAKT</div>
-      <div class="btn" id="copyBar">⧉ KOPIE</div>
-      <div class="btn" id="clearBar">⌫ LEER</div>
-      <div class="btn" id="delBar">🗑</div>
-    </div>
-  </div>
-
-  <div class="panel daw">
-    <div class="timeline editmode" id="timeline">
-      <div class="tl-inner" id="tlInner">
-        <div class="ruler" id="ruler"></div>
-        <div id="lanes"></div>
+  <details class="cpanel">
+    <summary><span class="arr"></span>Tempo &amp; Klang<span class="sum-line"></span></summary>
+    <div class="pbody">
+      <div class="crow">
+        <span class="clbl">Swing</span>
+        <input type="range" id="swing" min="0" max="65" value="0">
+        <span class="cval" id="swingVal">0%</span>
+      </div>
+      <div class="crow">
+        <span class="clbl">Zoom</span>
+        <input type="range" id="zoom" min="28" max="110" value="47">
+        <span class="cval" id="zoomVal">1.0×</span>
+      </div>
+      <div class="crow">
+        <span class="clbl">Metro</span>
+        <select class="csel" id="metroRate">
+          <option value="4">Viertel</option>
+          <option value="8">Achtel</option>
+          <option value="16">Sechzehntel</option>
+        </select>
+        <select class="csel" id="metroSound">
+          <option value="click">Click</option>
+          <option value="beep">Beep</option>
+          <option value="woodblock">Wood</option>
+          <option value="cowbell">Cow</option>
+          <option value="rim">Rim</option>
+        </select>
       </div>
     </div>
-  </div>
-
-  <div class="panel" style="padding:10px 12px;">
-    <div class="addtrack"><select id="addTrack"><option value="">+ Instrument hinzufügen…</option></select></div>
-    <div class="mini" id="modeHint">EDIT-Modus: Zellen tippen zum Setzen. Vertikal scrollen erlaubt. Für Seitwärts-Scroll auf SCROLL umschalten.</div>
-  </div>
-
-  <details>
-    <summary>Mixer (Lautstärke / Mute / Solo / Pitch)</summary>
-    <div class="panel" id="mixer" style="margin-top:6px;"></div>
   </details>
 
-  <details>
-    <summary>Speichern / Laden</summary>
-    <div class="panel" style="margin-top:6px;">
-      <div class="row">
+  <details class="cpanel">
+    <summary>
+      <span class="arr"></span>
+      Taktart&nbsp;—&nbsp;<b id="activeBarLabel" style="color:var(--a2)">1</b>&nbsp;·&nbsp;<span id="sigLabel">4/4</span>&nbsp;·&nbsp;<span id="modeLabel" style="color:var(--teal)">EDIT</span>
+      <span class="sum-line"></span>
+    </summary>
+    <div class="pbody">
+      <div class="chips" id="sigChips"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;">
+        <div class="stepper">
+          <div class="btn" id="numDown">−</div>
+          <div class="num" id="numVal">4</div>
+          <div class="btn" id="numUp">+</div>
+        </div>
+        <span style="color:var(--dim);font-size:.7rem;">/</span>
+        <div class="stepper">
+          <div class="btn" id="denDown">−</div>
+          <div class="num" id="denVal">4</div>
+          <div class="btn" id="denUp">+</div>
+        </div>
+        <span style="font-size:.5rem;color:var(--dim);letter-spacing:1px;">custom</span>
+      </div>
+      <div style="font-size:.5rem;color:var(--dim);letter-spacing:1px;margin-bottom:5px;">Beat antippen, dann Unterteilung wählen</div>
+      <div class="grpchips" id="grpChips"></div>
+      <div class="chips" id="divChips" style="margin-top:6px;"></div>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <div class="txbtn" id="mergeBtn">⏛ Vierteltriole (2 Beats)</div>
+        <div class="txbtn" id="applyAllBtn">⇶ Auf alle Beats</div>
+      </div>
+    </div>
+  </details>
+
+  <details class="cpanel">
+    <summary><span class="arr"></span>Mixer<span class="sum-line"></span></summary>
+    <div class="pbody" id="mixer"></div>
+  </details>
+
+  <details class="cpanel">
+    <summary><span class="arr"></span>Speichern &amp; Laden<span class="sum-line"></span></summary>
+    <div class="pbody">
+      <div style="display:flex;gap:8px;margin-bottom:4px;">
         <input type="text" id="saveName" placeholder="Name des Beats…" maxlength="32">
-        <div class="btn" id="saveBtn" style="flex:0 0 auto;">💾 SPEICHERN</div>
+        <div class="txbtn" style="flex:0 0 auto;" id="saveBtn">💾 Speichern</div>
       </div>
       <div class="savelist" id="saveList"></div>
-      <div class="row" style="margin-top:10px;">
-        <div class="btn" id="jsonExport">⬇ JSON-Datei</div>
-        <div class="btn" id="jsonImport">⬆ JSON laden</div>
+      <div style="display:flex;gap:6px;margin-top:10px;">
+        <div class="txbtn" id="jsonExport">⬇ JSON</div>
+        <div class="txbtn" id="jsonImport">⬆ Laden</div>
         <input type="file" id="jsonFile" accept=".json,application/json" style="display:none;">
       </div>
-      <div class="mini">Beats werden im Browser gespeichert. JSON-Export zum Teilen / Sichern der Notation.</div>
+      <div class="mini" style="padding:6px 0 0;">Beats im Browser gespeichert. JSON für Backup.</div>
     </div>
   </details>
 
-  <details>
-    <summary>Export (WAV-Loop)</summary>
-    <div class="panel" style="margin-top:6px;">
-      <div class="lbl" style="margin-bottom:6px;">Quelle</div>
-      <div class="chips">
+  <details class="cpanel">
+    <summary><span class="arr"></span>Export WAV<span class="sum-line"></span></summary>
+    <div class="pbody">
+      <div class="chips" style="margin-bottom:10px;">
         <div class="chip warm active" id="srcAll">Ganzer Song</div>
         <div class="chip warm" id="srcBar">Aktiver Takt</div>
       </div>
-      <div class="minictrl">
-        <div class="lbl">Loops</div>
+      <div class="crow">
+        <span class="clbl">Loops</span>
         <input type="range" id="repeats" min="1" max="8" value="1">
-        <div class="val" id="repeatsVal">1×</div>
+        <span class="cval" id="repeatsVal">1×</span>
       </div>
-      <div class="minictrl">
-        <div class="lbl">Tail</div>
+      <div class="crow">
+        <span class="clbl">Tail</span>
         <input type="range" id="tail" min="0" max="20" value="6">
-        <div class="val" id="tailVal">0.6s</div>
+        <span class="cval" id="tailVal">0.6s</span>
       </div>
-      <div class="mini">Tail = Ausklang am Ende. Für nahtlose Loops Tail auf 0 stellen.</div>
+      <div class="mini" style="padding:0;">Tail = Ausklang. Für nahtlose Loops auf 0 stellen.</div>
     </div>
   </details>
 
-  <div class="footer">
-    <div class="btn play" id="playBtn2">▶ PLAY</div>
-    <div class="btn export" id="exportBtn">⬇ EXPORT WAV</div>
-  </div>
-  <div class="toast" id="toast"></div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="play-btn" id="playBtn2">▶ PLAY</div>
+  <div class="exp-btn" id="exportBtn">⬇ WAV</div>
+</div>
+<div class="toast" id="toast"></div>
+
 <script>
 /* ============ AUDIO ENGINE ============ */
 let AC, MASTER;
@@ -464,7 +668,7 @@ function renderLanes(){
 }
 function paintCell(cell,id,on){
   if(on){ const c=INSTRUMENTS[id].color; cell.style.background=c; cell.style.borderColor=c; cell.style.boxShadow='0 0 10px '+c+'b0'; }
-  else { cell.style.background='#101216'; cell.style.borderColor='#25282f'; cell.style.boxShadow='none'; }
+  else { cell.style.background='#0c0f12'; cell.style.borderColor='#1c2025'; cell.style.boxShadow='none'; }
 }
 function markActiveLanes(){ document.querySelectorAll('.track').forEach(tr=>{ const lanes=tr.querySelectorAll('.lane'); lanes.forEach((l,i)=>l.classList.toggle('activebar',i===state.active)); }); }
 /* ---- Panels: Taktart / Gruppen / Kit / Mixer ---- */
